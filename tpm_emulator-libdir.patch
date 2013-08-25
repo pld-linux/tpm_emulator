@@ -1,0 +1,13 @@
+--- tpm_emulator-0.7.4/tddl/CMakeLists.txt.orig	2011-12-20 19:30:06.000000000 +0100
++++ tpm_emulator-0.7.4/tddl/CMakeLists.txt	2013-08-25 10:29:26.037614531 +0200
+@@ -15,8 +15,8 @@
+   set_target_properties(tddl PROPERTIES PREFIX "")
+ endif()
+ 
+-install(TARGETS tddl DESTINATION lib)
+-install(TARGETS tddl_static DESTINATION lib)
++install(TARGETS tddl DESTINATION lib${LIB_SUFFIX})
++install(TARGETS tddl_static DESTINATION lib${LIB_SUFFIX})
+ install(FILES "tddl.h" DESTINATION include)
+ 
+ include_directories(${CMAKE_CURRENT_SOURCE_DIR})

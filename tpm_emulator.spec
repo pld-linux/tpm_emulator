@@ -22,6 +22,7 @@ License:	GPL v2+
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/tpm-emulator.berlios/%{pname}-%{version}.tar.gz
 # Source0-md5:	e26becb8a6a2b6695f6b3e8097593db8
+Patch0:		%{pname}-libdir.patch
 URL:		http://tpm-emulator.berlios.de/
 BuildRequires:	cmake >= 2.4
 BuildRequires:	gmp-devel
@@ -91,6 +92,7 @@ przekazujący odebrane polecenia do tpmd.
 
 %prep
 %setup -q -n %{pname}-%{version}
+%patch0 -p1
 
 # separate kernel module from userspace build
 echo > tpmd_dev/CMakeLists.txt
