@@ -11,12 +11,13 @@
 %if %{without kernel}
 %undefine	with_dist_kernel
 %endif
+
+%define	pname	tpm_emulator
+%define	rel	2
 Summary:	Software-based TPM and MTM Emulator
 Summary(pl.UTF-8):	Programowy emulator TPM i MTM
-%define	pname	tpm_emulator
 Name:		%{pname}%{_alt_kernel}
 Version:	0.7.4
-%define	rel	1
 Release:	%{rel}
 License:	GPL v2+
 Group:		Applications/System
