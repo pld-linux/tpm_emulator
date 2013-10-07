@@ -13,7 +13,7 @@
 %endif
 
 %define	pname	tpm_emulator
-%define	rel	6
+%define	rel	7
 Summary:	Software-based TPM and MTM Emulator
 Summary(pl.UTF-8):	Programowy emulator TPM i MTM
 Name:		%{pname}%{_alt_kernel}
