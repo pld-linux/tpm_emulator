@@ -40,7 +40,7 @@ exit 1
 %define		bkpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%build_kernel_pkg ; done)
 
 %define	pname	tpm_emulator
-%define	rel	8
+%define	rel	9
 Summary:	Software-based TPM and MTM Emulator
 Summary(pl.UTF-8):	Programowy emulator TPM i MTM
 Name:		%{pname}%{_alt_kernel}
@@ -104,6 +104,7 @@ Statyczna biblioteka TDDL.
 %package -n kernel%{_alt_kernel}-char-tpmd\
 Summary:	Kernel module that provides /dev/tpm device\
 Summary(pl.UTF-8):	Moduł jądra udostępniający urządzenie /dev/tpm\
+Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
 %if %{with dist_kernel}\
 %requires_releq_kernel\
