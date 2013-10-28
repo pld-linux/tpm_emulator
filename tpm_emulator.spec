@@ -36,16 +36,17 @@ exit 1
 
 %define		_duplicate_files_terminate_build	0
 
+%define		kbrs	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo "BuildRequires:kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2" ; done)
 %define		kpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%kernel_pkg ; done)
 %define		bkpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%build_kernel_pkg ; done)
 
 %define	pname	tpm_emulator
-%define	rel	9
+%define	rel	10
 Summary:	Software-based TPM and MTM Emulator
 Summary(pl.UTF-8):	Programowy emulator TPM i MTM
-Name:		%{pname}%{_alt_kernel}
+Name:		%{pname}%{?_pld_builder:%{?with_kernel:-kernel}}%{_alt_kernel}
 Version:	0.7.4
-Release:	%{rel}%{?with_kernel:@%{_kernel_ver_str}}
+Release:	%{rel}%{?_pld_builder:%{?with_kernel:@%{_kernel_ver_str}}}
 License:	GPL v2+
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/tpm-emulator.berlios/%{pname}-%{version}.tar.gz
@@ -55,7 +56,7 @@ URL:		http://tpm-emulator.berlios.de/
 BuildRequires:	cmake >= 2.4
 BuildRequires:	gmp-devel
 BuildRequires:	rpmbuild(macros) >= 1.678
-%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2}
+%{?with_dist_kernel:%{expand:%kbrs}}
 Requires:	%{name}-libs = %{version}-%{rel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
