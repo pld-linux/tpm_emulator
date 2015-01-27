@@ -13,27 +13,12 @@
 exit 1
 %endif
 
-%if "%{_alt_kernel}" != "%{nil}"
-%if 0%{?build_kernels:1}
-%{error:alt_kernel and build_kernels are mutually exclusive}
-exit 1
-%endif
-%undefine	with_userspace
-%global		_build_kernels		%{alt_kernel}
-%else
-%global		_build_kernels		%{?build_kernels:,%{?build_kernels}}
-%endif
-
 %if %{without userspace}
 # nothing to be placed to debuginfo package
 %define		_enable_debug_packages	0
 %endif
 
 %define		_duplicate_files_terminate_build	0
-
-%define		kbrs	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo "BuildRequires:kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2" ; done)
-%define		kpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%kernel_pkg ; done)
-%define		bkpkg	%(echo %{_build_kernels} | tr , '\\n' | while read n ; do echo %%undefine alt_kernel ; [ -z "$n" ] || echo %%define alt_kernel $n ; echo %%build_kernel_pkg ; done)
 
 %define	pname	tpm_emulator
 %define	rel	10
@@ -50,8 +35,8 @@ Patch0:		%{pname}-libdir.patch
 URL:		http://tpm-emulator.berlios.de/
 BuildRequires:	cmake >= 2.4
 BuildRequires:	gmp-devel
-BuildRequires:	rpmbuild(macros) >= 1.678
-%{?with_kernel:%{expand:%kbrs}}
+BuildRequires:	rpmbuild(macros) >= 1.701
+%{?with_kernel:%{expand:%buildrequires_kernel kernel%%{_alt_kernel}-module-build >= 3:2.6.20.2}}
 Requires:	%{name}-libs = %{version}-%{rel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -132,7 +117,7 @@ przekazujący odebrane polecenia do tpmd.\
 %install_kernel_modules -D installed -m tpmd_dev/linux/tpmd_dev -d misc\
 %{nil}
 
-%{?with_kernel:%{expand:%kpkg}}
+%{?with_kernel:%{expand:%create_kernel_packages}}
 
 %prep
 %setup -q -n %{pname}-%{version}
@@ -152,7 +137,7 @@ cd ..
 %if %{with kernel}
 ln -sf ../../build/config.h tpmd_dev/linux/config.h
 %{__make} -C tpmd_dev/linux tpmd_dev.rules
-%{expand:%bkpkg}
+%{expand:%build_kernel_packages}
 %endif
 
 %install
