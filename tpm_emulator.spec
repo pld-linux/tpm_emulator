@@ -1,14 +1,9 @@
 #
 # Conditional build:
-%bcond_without	dist_kernel	# without distribution kernel
 %bcond_without  kernel		# don't build kernel modules
 %bcond_without	userspace	# don't build userspace packages
 %bcond_with	verbose		# verbose kernel module build
 #
-%if %{without kernel}
-%undefine	with_dist_kernel
-%endif
-
 # The goal here is to have main, userspace, package built once with
 # simple release number, and only rebuild kernel packages with kernel
 # version as part of release number, without the need to bump release
@@ -56,7 +51,7 @@ URL:		http://tpm-emulator.berlios.de/
 BuildRequires:	cmake >= 2.4
 BuildRequires:	gmp-devel
 BuildRequires:	rpmbuild(macros) >= 1.678
-%{?with_dist_kernel:%{expand:%kbrs}}
+%{?with_kernel:%{expand:%kbrs}}
 Requires:	%{name}-libs = %{version}-%{rel}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -107,10 +102,8 @@ Summary:	Kernel module that provides /dev/tpm device\
 Summary(pl.UTF-8):	Moduł jądra udostępniający urządzenie /dev/tpm\
 Release:	%{rel}@%{_kernel_ver_str}\
 Group:		Base/Kernel\
-%if %{with dist_kernel}\
 %requires_releq_kernel\
 Requires(postun):	%releq_kernel\
-%endif\
 \
 %description -n kernel%{_alt_kernel}-char-tpmd\
 Kernel module that provides /dev/tpm device for backward compatibility\
