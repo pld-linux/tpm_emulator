@@ -21,7 +21,7 @@ exit 1
 %define		_duplicate_files_terminate_build	0
 
 %define	pname	tpm_emulator
-%define	rel	10
+%define	rel	11
 Summary:	Software-based TPM and MTM Emulator
 Summary(pl.UTF-8):	Programowy emulator TPM i MTM
 Name:		%{pname}%{?_pld_builder:%{?with_kernel:-kernel}}%{_alt_kernel}
