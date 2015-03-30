@@ -1,0 +1,37 @@
+--- tpm_emulator-0.7.4/tpmd_dev/linux/tpmd_dev.c~	2011-12-20 19:30:06.000000000 +0100
++++ tpm_emulator-0.7.4/tpmd_dev/linux/tpmd_dev.c	2015-03-30 21:19:18.288861679 +0200
+@@ -25,6 +25,8 @@
+ #include <linux/net.h>
+ #include <linux/un.h>
+ 
++#include <linux/version.h>
++
+ #include "config.h"
+ 
+ #define TPM_DEVICE_MINOR  224
+@@ -108,8 +108,12 @@
+   memset(&msg, 0, sizeof(msg));
+   iov.iov_base = (void*)in;
+   iov.iov_len = in_size;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3,19,0)
+   msg.msg_iov = &iov;
+   msg.msg_iovlen = 1;
++#else
++  iov_iter_init(&msg.msg_iter, WRITE, &iov, 1, 1);
++#endif
+   res = sock_sendmsg(tpmd_sock, &msg, in_size);
+   if (res < 0) {
+     error("sock_sendmsg() failed: %d\n", res);
+@@ -122,8 +126,12 @@
+   memset(&msg, 0, sizeof(msg));
+   iov.iov_base = (void*)tpm_response.data;
+   iov.iov_len = tpm_response.size;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3,19,0)
+   msg.msg_iov = &iov;
+   msg.msg_iovlen = 1;
++#else
++  iov_iter_init(&msg.msg_iter, READ, &iov, 1, 1);
++#endif
+   oldmm = get_fs();
+   set_fs(KERNEL_DS);
+   res = sock_recvmsg(tpmd_sock, &msg, tpm_response.size, 0);

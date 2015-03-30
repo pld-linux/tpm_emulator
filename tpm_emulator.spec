@@ -21,7 +21,7 @@ exit 1
 %define		_duplicate_files_terminate_build	0
 
 %define	pname	tpm_emulator
-%define	rel	12
+%define	rel	13
 Summary:	Software-based TPM and MTM Emulator
 Summary(pl.UTF-8):	Programowy emulator TPM i MTM
 Name:		%{pname}%{?_pld_builder:%{?with_kernel:-kernel}}%{_alt_kernel}
@@ -32,6 +32,7 @@ Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/tpm-emulator.berlios/%{pname}-%{version}.tar.gz
 # Source0-md5:	e26becb8a6a2b6695f6b3e8097593db8
 Patch0:		%{pname}-libdir.patch
+Patch1:		linux-3.19.patch
 URL:		http://tpm-emulator.berlios.de/
 BuildRequires:	cmake >= 2.4
 BuildRequires:	gmp-devel
@@ -122,6 +123,7 @@ przekazujący odebrane polecenia do tpmd.\
 %prep
 %setup -q -n %{pname}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 # separate kernel module from userspace build
 echo > tpmd_dev/CMakeLists.txt
