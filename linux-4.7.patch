@@ -1,0 +1,14 @@
+--- tpm_emulator-0.7.4/tpmd_dev/linux/tpmd_dev.c~	2016-08-01 22:08:44.000000000 +0200
++++ tpm_emulator-0.7.4/tpmd_dev/linux/tpmd_dev.c	2016-08-01 22:20:50.942899171 +0200
+@@ -140,7 +140,11 @@
+ #endif
+   oldmm = get_fs();
+   set_fs(KERNEL_DS);
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4,7,0)
+   res = sock_recvmsg(tpmd_sock, &msg, tpm_response.size, 0);
++#else
++  res = sock_recvmsg(tpmd_sock, &msg, 0);
++#endif
+   set_fs(oldmm);
+   if (res < 0) {
+     error("sock_recvmsg() failed: %d\n", res);
