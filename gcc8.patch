@@ -1,0 +1,46 @@
+diff -ur tpm_emulator-0.7.4/mtm/CMakeLists.txt tpm_emulator-0.7.4-gcc8/mtm/CMakeLists.txt
+--- tpm_emulator-0.7.4/mtm/CMakeLists.txt	2011-12-20 19:30:06.000000000 +0100
++++ tpm_emulator-0.7.4-gcc8/mtm/CMakeLists.txt	2018-07-28 21:23:13.044547064 +0200
+@@ -3,6 +3,7 @@
+ #
+ # $Id: CMakeLists.txt 376 2010-02-16 14:51:42Z mast $
+ 
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-fallthrough")
+ add_definitions(-DMTM_EMULATOR)
+ file(GLOB tpm_SRCS ../tpm/tpm_cmd_handler.c ../tpm/tpm_data.c)
+ file(GLOB mtm_SRCS "*.[h|c]")
+diff -ur tpm_emulator-0.7.4/tpm/tpm_cmd_handler.c tpm_emulator-0.7.4-gcc8/tpm/tpm_cmd_handler.c
+--- tpm_emulator-0.7.4/tpm/tpm_cmd_handler.c	2011-12-20 19:30:06.000000000 +0100
++++ tpm_emulator-0.7.4-gcc8/tpm/tpm_cmd_handler.c	2018-07-28 21:17:04.576693746 +0200
+@@ -3330,6 +3330,7 @@
+                   sizeof(rsp->auth2->nonceOdd.nonce));
+       tpm_hmac_update(&hmac, (BYTE*)&rsp->auth2->continueAuthSession, 1);
+       tpm_hmac_final(&hmac, rsp->auth2->auth);
++      break;
+     case TPM_TAG_RSP_AUTH1_COMMAND:
+       tpm_hmac_init(&hmac, rsp->auth1->secret, sizeof(rsp->auth1->secret));
+       tpm_hmac_update(&hmac, rsp->auth1->digest, sizeof(rsp->auth1->digest));
+diff -ur tpm_emulator-0.7.4/tpm/tpm_deprecated.c tpm_emulator-0.7.4-gcc8/tpm/tpm_deprecated.c
+--- tpm_emulator-0.7.4/tpm/tpm_deprecated.c	2011-12-20 19:30:06.000000000 +0100
++++ tpm_emulator-0.7.4-gcc8/tpm/tpm_deprecated.c	2018-07-28 21:14:33.244844366 +0200
+@@ -434,7 +434,7 @@
+   tpm_hmac_final(&hmac_ctx, b1.digest);
+   /* 6. The TPM SHALL compare b1 with newAuthLink. The TPM SHALL
+         indicate a failure if the values do not match. */
+-  if (memcmp(&b1, &newAuthLink, sizeof(TPM_HMAC))) {
++  if (memcmp(&b1, newAuthLink, sizeof(TPM_HMAC))) {
+     debug("TPM_ChangeAuthAsymFinish(): newAuthLink value does not match.");
+     return TPM_FAIL;
+   }
+diff -ur tpm_emulator-0.7.4/tpmd_dev/linux/tpmd_dev.c tpm_emulator-0.7.4-gcc8/tpmd_dev/linux/tpmd_dev.c
+--- tpm_emulator-0.7.4/tpmd_dev/linux/tpmd_dev.c	2018-07-28 21:27:33.331082169 +0200
++++ tpm_emulator-0.7.4-gcc8/tpmd_dev/linux/tpmd_dev.c	2018-07-28 21:26:55.750619594 +0200
+@@ -82,7 +82,7 @@
+     return res;
+   }
+   addr.sun_family = AF_UNIX;
+-  strncpy(addr.sun_path, socket_name, sizeof(addr.sun_path));
++  strncpy(addr.sun_path, socket_name, sizeof(addr.sun_path)-1);
+   res = tpmd_sock->ops->connect(tpmd_sock, 
+     (struct sockaddr*)&addr, sizeof(struct sockaddr_un), 0);
+   if (res != 0) {
